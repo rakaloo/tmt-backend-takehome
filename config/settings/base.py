@@ -42,7 +42,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'interview.core',
     'interview.inventory',
-    'interview.order'
+    'interview.order',
+    'interview.profiles'
 ]
 
 MIDDLEWARE = [
@@ -128,7 +129,10 @@ USE_TZ = True
 STATIC_URL = 'static/'
 STATIC_ROOT = 'interview/static'
 
-# Default primary key field type
+# Default primary key field type["django.contrib.auth.backends.ModelBackend"]
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Set default user model
+AUTH_USER_MODEL = "profiles.UserProfile"
