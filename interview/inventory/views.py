@@ -1,3 +1,6 @@
+from datetime import datetime, timedelta
+
+from django.db.models import Q
 from rest_framework.response import Response
 from rest_framework.request import Request
 from rest_framework.views import APIView
@@ -27,7 +30,12 @@ class InventoryListCreateView(APIView):
         return Response(serializer.data, status=201)
     
     def get(self, request: Request, *args, **kwargs) -> Response:
-        serializer = self.serializer_class(self.get_queryset(), many=True)
+        date_str = request.GET.get("date")
+        filter_q = Q()
+        if date_str:
+            date_start = datetime.strptime(date_str,'%Y-%m-%d')
+            filter_q = Q(created_at__gte=date_start)
+        serializer = self.serializer_class(self.get_queryset().filter(filter_q), many=True)
         
         return Response(serializer.data, status=200)
     
@@ -63,6 +71,17 @@ class InventoryRetrieveUpdateDestroyView(APIView):
     
     def get_queryset(self, **kwargs):
         return self.queryset.get(**kwargs)
+
+
+class InventoryRetrieveByDayView(APIView):
+    queryset = Inventory.objects.all()
+    serializer_class = InventorySerializer
+
+    def get(self, request: Request, *args, **kwargs) -> Response:
+        inventory = self.get_queryset(id=kwargs['id'])
+        serializer = self.serializer_class(inventory)
+
+        return Response(serializer.data, status=200)
 
 
 class InventoryTagListCreateView(APIView):
